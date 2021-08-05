@@ -1,3 +1,9 @@
 module.exports = {
-    publicPath: '/BeautifulCSS/'
+    publicPath: '/BeautifulCSS/',
+    pages: {
+      index: {
+        entry: "src/main.js",
+        title: "BeautifulCSS",
+      }
+    }
   }
