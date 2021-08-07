@@ -113,17 +113,37 @@ export default {
           contents[file.ext] = [file.content];
         }
       });
+      contents["html"] = contents["html"].map((htmlfile) => {
+        var newHtml = htmlfile;
+        this.files.forEach((file) => {
+          switch (file.ext) {
+            case "css":
+              var cssReg = new RegExp(
+                "<\\s*link.*" + file.name + ".*/\\s*(link)*\\s*>",
+                "igm"
+              );
+              newHtml = newHtml.replace(
+                cssReg,
+                "<style>" + file.content + "</style>"
+              );
+              break;
+            case "js":
+              var jsReg = new RegExp(
+                "<\\s*script.*" + file.name + ".*/\\s*(script)*\\s*>",
+                "igm"
+              );
+              newHtml = newHtml.replace(
+                jsReg,
+                "<script>" + file.content + "</" + "script>"
+              );
+              break;
+          }
+        });
+        console.log(newHtml);
+        return newHtml;
+      });
       console.log(contents);
-      this.fullContent =
-        "<!DOCTYPE html>" +
-        "<html><head><style >" +
-        (contents["css"] ? contents["css"].join("") : "") +
-        "</style></head><body>" +
-        (contents["html"] ? contents["html"].join("") : "") +
-        "<script>" +
-        (contents["js"] ? contents["js"].join("") : "") +
-        "</" +
-        "script></body></html>";
+      this.fullContent = contents["html"] ? contents["html"].join("") : "";
     },
   },
   mounted: function() {
