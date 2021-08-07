@@ -129,7 +129,7 @@ export default {
   mounted: function() {
     const axios = require("axios");
     var url =
-      "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects" +
+      "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
       this.projectName;
     axios
       .get(url)
