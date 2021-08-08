@@ -1,61 +1,72 @@
 <template>
-  <div class="container">
-    <h1 class="display-5 fw-bold text-left">{{ this.projectName }}</h1>
+  <div class="container-fluid">
     <div class="row">
-      <div class="col">
-        <div class="row justify-content-between">
-          <ul class="nav nav-tabs col" id="myTab" role="tablist">
-            <li
-              class="nav-item"
-              role="presentation"
-              v-for="file in files"
-              :key="file.id"
-            >
-              <button
-                :class="'nav-link ' + (file.isActive ? 'active' : '')"
-                :id="file.name + '-tab'"
-                data-bs-toggle="tab"
-                :data-bs-target="'#' + file.name"
-                type="button"
-                role="tab"
-                :aria-controls="file.name"
-                aria-selected="true"
-                @click="activateTab(file.id)"
-              >
-                {{ file.name }}
-              </button>
-            </li>
-          </ul>
-          <div class="col-1">
-            <DownloadButton
-              :files="this.files"
-              :projectName="this.projectName"
-            />
-          </div>
-        </div>
-
-        <div class="row tab-content">
-          <div
-            :class="'px-0 tab-pane ' + (file.isActive ? 'show active' : '')"
-            :id="file.name"
-            role="tabpanel"
-            :aria-labelledby="file.name + '-tab'"
-            v-for="file in files"
-            :key="file.id"
-          >
-            <v-ace-editor
-              v-model:value="file.content"
-              :lang="ext(file.name)"
-              theme="monokai"
-              style="height: 600px"
-              :options="options"
-              @init="editorInit"
-            />
-          </div>
-        </div>
+      <div class="col-2">
+        <Sidebar :currentProjectName="this.projectName" />
       </div>
       <div class="col">
-        <iframe class="w-100 h-100 border" :srcdoc="fullContent" />
+        <div class="row">
+          <h2 class="text-left">{{ this.projectName }}</h2>
+        </div>
+
+        <div class="row">
+          <!--编辑器 -->
+          <div class="col">
+            <div class="row justify-content-between">
+              <ul class="nav nav-tabs col" id="myTab" role="tablist">
+                <li
+                  class="nav-item"
+                  role="presentation"
+                  v-for="file in files"
+                  :key="file.id"
+                >
+                  <button
+                    :class="'nav-link ' + (file.isActive ? 'active' : '')"
+                    :id="file.name + '-tab'"
+                    data-bs-toggle="tab"
+                    :data-bs-target="'#' + file.name"
+                    type="button"
+                    role="tab"
+                    :aria-controls="file.name"
+                    aria-selected="true"
+                    @click="activateTab(file.id)"
+                  >
+                    {{ file.name }}
+                  </button>
+                </li>
+              </ul>
+              <div class="col-1">
+                <DownloadButton
+                  :files="this.files"
+                  :projectName="this.projectName"
+                />
+              </div>
+            </div>
+            <div class="row tab-content">
+              <div
+                :class="'px-0 tab-pane ' + (file.isActive ? 'show active' : '')"
+                :id="file.name"
+                role="tabpanel"
+                :aria-labelledby="file.name + '-tab'"
+                v-for="file in files"
+                :key="file.id"
+              >
+                <v-ace-editor
+                  v-model:value="file.content"
+                  :lang="ext(file.name)"
+                  theme="monokai"
+                  style="height: 600px"
+                  :options="options"
+                  @init="editorInit"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- 预览 -->
+          <div class="col">
+            <iframe class="w-100 h-100 border" :srcdoc="fullContent" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,11 +77,14 @@ import { VAceEditor } from "vue3-ace-editor";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/webpack-resolver";
 import DownloadButton from "./DownloadButton.vue";
+import Sidebar from "./Sidebar.vue";
+import axios from "axios";
 export default {
   name: "Panel",
   components: {
     VAceEditor,
     DownloadButton,
+    Sidebar,
   },
   props: {
     projectName: {
@@ -132,7 +146,7 @@ export default {
                   "<style>" + file.content + "</style>"
                 );
                 break;
-              case "js":
+              case "javascript":
                 var jsReg = new RegExp(
                   "<\\s*script.*" + file.name + ".*/\\s*(script)*\\s*>",
                   "igm"
@@ -152,7 +166,6 @@ export default {
     },
   },
   mounted: function() {
-    const axios = require("axios");
     var url =
       "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
       this.projectName;
@@ -161,24 +174,28 @@ export default {
       .then((response) => {
         response.data.forEach((record) => {
           var ext = this.ext(record.name);
-          if (["html", "js", "css"].indexOf(ext) > -1) {
+          if (["html", "javascript", "css"].indexOf(ext) > -1) {
             axios.get(record.download_url).then((res) => {
-              var file = {};
-              file.content = res.data;
-              file.name = record.name;
-              file.ext = this.ext(file.name);
-              file.id = record.sha;
-              file.isActive = this.files.length == 0;
-              this.files.push(file);
-              console.log(this.files);
+              var file = {
+                content: res.data,
+                name: record.name,
+                ext: ext,
+                id: record.sha,
+                isActive: false,
+              };
+              if (ext == "html") {
+                file.isActive = true;
+                this.files.splice(0, 0, file);
+              } else {
+                this.files.push(file);
+              }
             });
           }
         });
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
       });
-    console.log(this.files);
   },
   updated: function() {
     this.updateIFrame();
