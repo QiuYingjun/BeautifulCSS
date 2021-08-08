@@ -1,34 +1,42 @@
 <template>
   <div class="container">
+    <h1 class="display-5 fw-bold text-left">{{ this.projectName }}</h1>
     <div class="row">
-      <h1>{{ this.projectName }}</h1>
-
       <div class="col">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li
-            class="nav-item"
-            role="presentation"
-            v-for="file in files"
-            :key="file.id"
-          >
-            <button
-              :class="'nav-link ' + (file.isActive ? 'active' : '')"
-              :id="file.name + '-tab'"
-              data-bs-toggle="tab"
-              :data-bs-target="'#' + file.name"
-              type="button"
-              role="tab"
-              :aria-controls="file.name"
-              aria-selected="true"
-              @click="activateTab(file.id)"
+        <div class="row justify-content-between">
+          <ul class="nav nav-tabs col" id="myTab" role="tablist">
+            <li
+              class="nav-item"
+              role="presentation"
+              v-for="file in files"
+              :key="file.id"
             >
-              {{ file.name }}
-            </button>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
+              <button
+                :class="'nav-link ' + (file.isActive ? 'active' : '')"
+                :id="file.name + '-tab'"
+                data-bs-toggle="tab"
+                :data-bs-target="'#' + file.name"
+                type="button"
+                role="tab"
+                :aria-controls="file.name"
+                aria-selected="true"
+                @click="activateTab(file.id)"
+              >
+                {{ file.name }}
+              </button>
+            </li>
+          </ul>
+          <div class="col-1">
+            <DownloadButton
+              :files="this.files"
+              :projectName="this.projectName"
+            />
+          </div>
+        </div>
+
+        <div class="row tab-content">
           <div
-            :class="'tab-pane ' + (file.isActive ? 'fade show active' : '')"
+            :class="'px-0 tab-pane ' + (file.isActive ? 'show active' : '')"
             :id="file.name"
             role="tabpanel"
             :aria-labelledby="file.name + '-tab'"
@@ -47,13 +55,7 @@
         </div>
       </div>
       <div class="col">
-        <iframe
-          id="preview"
-          style="top: 0;background: #ccc; width:100%; height:666px;"
-          class="edit-area"
-          frameborder="0"
-          :srcdoc="fullContent"
-        />
+        <iframe class="w-100 h-100 border" :srcdoc="fullContent" />
       </div>
     </div>
   </div>
@@ -63,10 +65,12 @@
 import { VAceEditor } from "vue3-ace-editor";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/webpack-resolver";
+import DownloadButton from "./DownloadButton.vue";
 export default {
   name: "Panel",
   components: {
     VAceEditor,
+    DownloadButton,
   },
   props: {
     projectName: {
@@ -113,36 +117,37 @@ export default {
           contents[file.ext] = [file.content];
         }
       });
-      contents["html"] = contents["html"].map((htmlfile) => {
-        var newHtml = htmlfile;
-        this.files.forEach((file) => {
-          switch (file.ext) {
-            case "css":
-              var cssReg = new RegExp(
-                "<\\s*link.*" + file.name + ".*/\\s*(link)*\\s*>",
-                "igm"
-              );
-              newHtml = newHtml.replace(
-                cssReg,
-                "<style>" + file.content + "</style>"
-              );
-              break;
-            case "js":
-              var jsReg = new RegExp(
-                "<\\s*script.*" + file.name + ".*/\\s*(script)*\\s*>",
-                "igm"
-              );
-              newHtml = newHtml.replace(
-                jsReg,
-                "<script>" + file.content + "</" + "script>"
-              );
-              break;
-          }
+      if (contents["html"]) {
+        contents["html"] = contents["html"].map((htmlfile) => {
+          var newHtml = htmlfile;
+          this.files.forEach((file) => {
+            switch (file.ext) {
+              case "css":
+                var cssReg = new RegExp(
+                  "<\\s*link.*" + file.name + ".*/\\s*(link)*\\s*>",
+                  "igm"
+                );
+                newHtml = newHtml.replace(
+                  cssReg,
+                  "<style>" + file.content + "</style>"
+                );
+                break;
+              case "js":
+                var jsReg = new RegExp(
+                  "<\\s*script.*" + file.name + ".*/\\s*(script)*\\s*>",
+                  "igm"
+                );
+                newHtml = newHtml.replace(
+                  jsReg,
+                  "<script>" + file.content + "</" + "script>"
+                );
+                break;
+            }
+          });
+          return newHtml;
         });
-        console.log(newHtml);
-        return newHtml;
-      });
-      console.log(contents);
+      }
+
       this.fullContent = contents["html"] ? contents["html"].join("") : "";
     },
   },
@@ -180,35 +185,3 @@ export default {
   },
 };
 </script>
-<style>
-.tinytabs .tabs {
-  margin-left: 15px;
-  display: flex;
-  flex-flow: row wrap;
-}
-.tinytabs .tabs .tab .close {
-  padding-left: 5px;
-}
-.tinytabs .tabs .tab {
-  margin: 0 3px 0 0;
-  background: #e1e1e1;
-  display: block;
-  padding: 6px 15px;
-  text-decoration: none;
-  color: #666;
-  font-weight: bold;
-  border-radius: 3px 3px 0 0;
-}
-.tinytabs .section {
-  background: #f1f1f1;
-  overflow: hidden;
-  padding: 15px;
-  clear: both;
-  border-radius: 3px;
-}
-.tinytabs .tab.sel {
-  background: #f1f1f1;
-  color: #333;
-  text-shadow: none;
-}
-</style>

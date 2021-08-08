@@ -13,7 +13,10 @@
     "@vue/cli": "^4.5.13",
     "axios": "^0.21.1",
     "bootstrap": "5.1.0",
+    "bootstrap-icons": "^1.5.0",
     "core-js": "^3.6.5",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.7.1",
     "vue": "^3.0.0",
     "vue3-ace-editor": "^2.0.2"
   },
