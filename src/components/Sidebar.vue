@@ -65,7 +65,6 @@ export default {
             id: record.sha,
           });
         });
-        console.log(this.projects);
         return this.projects;
       })
       .then((projects) => {
@@ -79,21 +78,13 @@ export default {
             .then((response) => {
               project.description =
                 Base64.decode(response.data.content).substring(0, 55) + "...";
+              project.image_url =
+                "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
+                project.name +
+                "/readme.png";
             })
             .catch(() => {
               project.description = "没有说明";
-            });
-
-          axios
-            .get(
-              "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
-                project.name +
-                "/readme.png"
-            )
-            .then((response) => {
-              project.image_url = response.data.download_url;
-            })
-            .catch(() => {
               project.image_url = logo;
             });
         });
