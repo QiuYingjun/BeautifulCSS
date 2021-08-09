@@ -2,11 +2,11 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-2">
-        <Sidebar :currentProjectName="this.projectName" />
+        <Sidebar :currentProjectName="projectName" />
       </div>
       <div class="col">
         <div class="row">
-          <h2 class="text-left">{{ this.projectName }}</h2>
+          <h2 class="text-left">{{ projectName }}</h2>
         </div>
 
         <div class="row">
@@ -36,10 +36,7 @@
                 </li>
               </ul>
               <div class="col-1">
-                <DownloadButton
-                  :files="this.files"
-                  :projectName="this.projectName"
-                />
+                <DownloadButton :files="files" :projectName="projectName" />
               </div>
             </div>
             <div class="row tab-content">
@@ -161,7 +158,6 @@ export default {
           return newHtml;
         });
       }
-
       this.fullContent = contents["html"] ? contents["html"].join("") : "";
     },
   },

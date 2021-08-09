@@ -10,20 +10,18 @@
     <div class="list-group" style="overflow:auto;height:800px">
       <a
         :class="
-          (project.name == this.currentProjectName ? 'active ' : '') +
+          (project.name == currentProjectName ? 'active ' : '') +
             'border-bottom list-group-item list-group-item-action lh-tight'
         "
         href="#"
-        :aria-current="project.name == this.currentProjectName"
+        :aria-current="project.name == currentProjectName"
         v-for="project in projects"
         :key="project.name"
       >
         <div class="d-flex w-100 justify-content-between">
           <div class="col-8">
             <strong class="mb-1">{{ project.name }}</strong>
-            <div class="mb-1 small ">
-              {{ project.description }}
-            </div>
+            <h6 class="mb-1 small pe-1">{{ project.description }}</h6>
           </div>
           <div class="col-4">
             <img class="img-thumbnail float-right" :src="project.image_url" />
@@ -77,7 +75,9 @@ export default {
             )
             .then((response) => {
               project.description =
-                Base64.decode(response.data.content).substring(0, 55) + "...";
+                Base64.decode(response.data.content)
+                  .replace(/^#.*/, "")
+                  .substring(0, 50) + "...";
               project.image_url =
                 "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
                 project.name +
@@ -101,3 +101,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+img {
+  width: 80px;
+  height: 80px;
+}
+</style>
