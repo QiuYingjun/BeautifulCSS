@@ -8,15 +8,13 @@
       <h1 class="text-left">BeautifulCSS</h1>
     </a>
     <div class="list-group" style="overflow:auto;height:800px">
-      <a
-        :class="
-          (project.name == currentProjectName ? 'active ' : '') +
-            'border-bottom list-group-item list-group-item-action lh-tight'
-        "
-        href="#"
-        :aria-current="project.name == currentProjectName"
+      <router-link
         v-for="project in projects"
         :key="project.name"
+        :to="'/editpanel/' + project.name"
+        tag="a"
+        class="border-bottom list-group-item list-group-item-action lh-tight"
+        active-class="active"
       >
         <div class="d-flex w-100 justify-content-between">
           <div class="col-8">
@@ -27,7 +25,7 @@
             <img class="img-thumbnail float-right" :src="project.image_url" />
           </div>
         </div>
-      </a>
+      </router-link>
     </div>
   </div>
 </template>
@@ -48,15 +46,19 @@ export default {
       default: "",
     },
   },
-  methods: {},
+  methods: {
+    changeProject: function(pjName) {
+      console.log(pjName);
+    },
+  },
   mounted: function() {
-    // prjects目录下所有问题的sha
-    //
+    console.log(this.currentProjectName);
     axios
       .get(
         "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects"
       )
       .then((response) => {
+        console.log("获取工程一览");
         response.data.forEach((record) => {
           this.projects.push({
             name: record.name,

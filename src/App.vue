@@ -1,13 +1,9 @@
 <template>
-  <Panel />
+  <div id="app">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/editpanel">Panel</router-link>
+    <router-view></router-view>
+  </div>
 </template>
 
-<script>
-import Panel from "./components/Panel.vue";
-export default {
-  name: "App",
-  components: {
-    Panel,
-  },
-};
-</script>
+<script></script>

@@ -19,7 +19,9 @@
     "js-base64": "^3.6.1",
     "jszip": "^3.7.1",
     "vue": "^3.0.0",
-    "vue3-ace-editor": "^2.0.2"
+    "vue-router": "^4.0.10",
+    "vue3-ace-editor": "^2.0.2",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

@@ -13,7 +13,7 @@ export default {
     return {};
   },
   props: {
-    files: [],
+    files: Array,
     projectName: {
       type: String,
       default: "example",
