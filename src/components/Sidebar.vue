@@ -1,33 +1,32 @@
 <template>
-  <div>
-    <a
-      class="d-flex align-items-left p-3 link-dark text-decoration-none border-bottom"
-      href="https://github.com/QiuYingjun/BeautifulCSS"
-      target="blank"
-    >
-      <h1 class="text-left">BeautifulCSS</h1>
-    </a>
-    <div class="list-group" style="overflow:auto;height:800px">
+  <a-list
+    item-layout="vertical"
+    size="small"
+    :data-source="projects"
+    :pagination="{ pageSize: 5, position: 'top' }"
+  >
+    <template #renderItem="{ item }">
       <router-link
-        v-for="project in projects"
-        :key="project.name"
-        :to="'/BeautifulCSS/editpanel/' + project.name"
-        tag="a"
-        class="border-bottom list-group-item list-group-item-action lh-tight"
+        :to="'/BeautifulCSS/EditPanel/' + item.name"
         active-class="active"
       >
-        <div class="d-flex w-100 justify-content-between">
-          <div class="col-8">
-            <strong class="mb-1">{{ project.name }}</strong>
-            <h6 class="mb-1 small pe-1">{{ project.description }}</h6>
-          </div>
-          <div class="col-4">
-            <img class="img-thumbnail float-right" :src="project.image_url" />
-          </div>
-        </div>
+        <a-card hoverable width="280" size="small">
+          <a-row>
+            <a-col :span="8">
+              <img
+                alt="example"
+                style="width:100%;height:100%"
+                :src="item.image_url"
+              />
+            </a-col>
+            <a-col :span="16" style="padding-left:10px">
+              <a-card-meta :title="item.name" :description="item.description" />
+            </a-col>
+          </a-row>
+        </a-card>
       </router-link>
-    </div>
-  </div>
+    </template>
+  </a-list>
 </template>
 <script>
 import axios from "axios";
@@ -79,7 +78,7 @@ export default {
               project.description =
                 Base64.decode(response.data.content)
                   .replace(/^#.*/, "")
-                  .substring(0, 50) + "...";
+                  .substring(0, 60) + "...";
               project.image_url =
                 "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
                 project.name +
@@ -104,8 +103,7 @@ export default {
 };
 </script>
 <style scoped>
-img {
-  width: 80px;
-  height: 80px;
+.active div.ant-card {
+  border-color: #369eff;
 }
 </style>

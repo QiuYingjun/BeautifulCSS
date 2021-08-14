@@ -1,59 +1,37 @@
 <template>
-  <div class="row">
-    <!--编辑器 -->
-    <div class="col">
-      <div class="row justify-content-between">
-        <ul class="nav nav-tabs col" id="myTab" role="tablist">
-          <li
-            class="nav-item"
-            role="presentation"
-            v-for="file in files"
-            :key="file.id"
-          >
-            <button
-              :class="'nav-link ' + (file.isActive ? 'active' : '')"
-              :id="file.name + '-tab'"
-              data-bs-toggle="tab"
-              :data-bs-target="'#' + file.name"
-              type="button"
-              role="tab"
-              :aria-controls="file.name"
-              aria-selected="true"
-              @click="activateTab(file.id)"
-            >
-              {{ file.name }}
-            </button>
-          </li>
-        </ul>
-        <div class="col-1">
+  <a-row>
+    <a-col :span="12">
+      <a-card
+        style="width: 100%"
+        :title="projectName"
+        :tab-list="files"
+        :active-tab-key="current"
+        @tabChange="
+          (key) => {
+            current = key;
+          }
+        "
+      >
+        <template #tabBarExtraContent>
           <DownloadButton :files="files" :projectName="projectName" />
-        </div>
-      </div>
-      <div class="row tab-content">
-        <div
-          :class="'px-0 tab-pane ' + (file.isActive ? 'show active' : '')"
-          :id="file.name"
-          role="tabpanel"
-          :aria-labelledby="file.name + '-tab'"
-          v-for="file in files"
-          :key="file.id"
-        >
+        </template>
+        <div v-for="file in files" :key="file.name">
           <v-ace-editor
             v-model:value="file.content"
-            :lang="ext(file.name)"
+            v-if="file.name == current"
+            :lang="file.ext"
             theme="monokai"
             style="height: 600px"
             :options="options"
-            @init="editorInit"
           />
         </div>
-      </div>
-    </div>
+      </a-card>
+    </a-col>
     <!-- 预览 -->
-    <div class="col">
-      <iframe class="w-100 h-100 border" :srcdoc="fullContent" />
-    </div>
-  </div>
+    <a-col :span="12">
+      <iframe style="width:100%;height:100%" :srcdoc="fullContent" />
+    </a-col>
+  </a-row>
 </template>
 <script>
 import DownloadButton from "./DownloadButton.vue";
@@ -76,13 +54,28 @@ export default {
   },
   data() {
     return {
+      current: "",
       files: [],
-      fullContent: "",
+      // fullContent: "",
       options: {
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: true,
         useWorker: true,
+      },
+      tabList: [
+        {
+          name: "tab1",
+          tab: "我",
+        },
+        {
+          name: "tab2",
+          tab: "你",
+        },
+      ],
+      contentList: {
+        tab1: "content1",
+        tab2: "content2",
       },
     };
   },
@@ -98,11 +91,6 @@ export default {
           break;
       }
       return e;
-    },
-    activateTab(fileId) {
-      this.files.forEach((file) => {
-        file.isActive = file.id == fileId;
-      });
     },
     updateIFrame: function() {
       var contents = {};
@@ -143,7 +131,7 @@ export default {
           return newHtml;
         });
       }
-      this.fullContent = contents["html"] ? contents["html"].join("") : "";
+      return contents["html"] ? contents["html"].join("") : "";
     },
     getFilesFromAPI() {
       this.files = [];
@@ -163,11 +151,12 @@ export default {
                   name: record.name,
                   ext: ext,
                   id: record.sha,
-                  isActive: false,
+                  key: record.name,
+                  tab: record.name,
                 };
                 if (ext == "html") {
-                  file.isActive = true;
                   this.files.splice(0, 0, file);
+                  this.current = file.name;
                 } else {
                   this.files.push(file);
                 }
@@ -184,19 +173,27 @@ export default {
   mounted: function() {
     this.getFilesFromAPI();
   },
+  computed: {
+    fullContent() {
+      return this.updateIFrame();
+    },
+  },
   updated: function() {
     this.updateIFrame();
   },
   watch: {
     projectName: function(newVal, oldVal) {
-      const project = {
+      // 画面上的修改在切换project时要存下来
+      const oldProject = {
         name: oldVal,
         files: this.files,
       };
-      this.$store.commit("upsertProject", project);
-      this.files = this.$store.state.projects[newVal];
-      if (!this.files) {
+      this.$store.commit("upsertProject", oldProject);
+      const newProject = this.$store.getters.getProjectByName(newVal);
+      if (!newProject) {
         this.getFilesFromAPI();
+      } else {
+        this.files = newProject.files;
       }
     },
   },

@@ -1,27 +1,19 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-2">
-        <Sidebar :currentProjectName="projectName" />
-      </div>
-      <div class="col">
-        <div class="row">
-          <h2 class="text-left">{{ projectName }}</h2>
-        </div>
-        <router-view> </router-view>
-      </div>
-    </div>
-  </div>
+  <a-layout :has-sider="true">
+    <a-layout-sider :theme="'light'" width="320">
+      <Sidebar :currentProjectName="projectName" />
+    </a-layout-sider>
+    <a-layout-content>
+      <router-view> </router-view>
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <script>
-// import Editor from "@/components/Editor.vue";
 import Sidebar from "@/components/Sidebar.vue";
-// import { useRoute } from "vue-router";
 export default {
   name: "EditPanel",
   components: {
-    // Editor,
     Sidebar,
   },
   props: {

@@ -1,14 +1,19 @@
 <template>
-  <button type="button" class=" btn btn-outline-dark" @click="download">
-    <i class="bi bi-download"></i>
-  </button>
+  <a-button type="primary" @click="download" shape="round" :size="size">
+    <template #icon>
+      <DownloadOutlined />
+    </template>
+  </a-button>
 </template>
 <script>
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-
+import { DownloadOutlined } from "@ant-design/icons-vue";
 export default {
   name: "DownloadButton",
+  components: {
+    DownloadOutlined,
+  },
   data() {
     return {};
   },
