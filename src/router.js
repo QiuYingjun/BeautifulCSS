@@ -8,12 +8,12 @@ export default createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
+      path: "/BeautifulCSS",
       name: "home",
       component: Home,
     },
     {
-      path: "/EditPanel/:projectName",
+      path: "/BeautifulCSS/EditPanel/:projectName",
       name: "EditPanel",
       component: EditPanel,
       props: true,
@@ -26,8 +26,8 @@ export default createRouter({
       ],
     },
     {
-      path: "/EditPanel",
-      redirect: "/EditPanel/Glass Card",
+      path: "/BeautifulCSS/EditPanel",
+      redirect: "/BeautifulCSS/EditPanel/Glass Card",
     },
   ],
 });

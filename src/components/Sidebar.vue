@@ -11,7 +11,7 @@
       <router-link
         v-for="project in projects"
         :key="project.name"
-        :to="'/editpanel/' + project.name"
+        :to="'/BeautifulCSS/editpanel/' + project.name"
         tag="a"
         class="border-bottom list-group-item list-group-item-action lh-tight"
         active-class="active"
