@@ -75,10 +75,16 @@ export default {
                 "/readme.md"
             )
             .then((response) => {
-              project.description =
-                Base64.decode(response.data.content)
-                  .replace(/^#.*/, "")
-                  .substring(0, 60) + "...";
+              project.description = "";
+              // 去掉标题后，取第一行为说明文本
+              for (const s of Base64.decode(response.data.content)
+                .replace(/^#.*/, "")
+                .split("\n")) {
+                if (s != "" && project.description == "") {
+                  project.description = s;
+                  break;
+                }
+              }
               project.image_url =
                 "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
                 project.name +

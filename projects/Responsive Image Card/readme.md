@@ -1,6 +1,6 @@
 # Responsive Image Card
 
-响应式图片预览。相比于原视频代码，增加了对各种尺寸图片的居中并缩放。
+响应式图片预览。优化了对各种尺寸图片的居中并缩放显示。
 
 出处：[CSS Responsive Card Hover Effects | Html & CSS - YouTube](https://www.youtube.com/watch?v=8b2mTq0Xrtw)
 

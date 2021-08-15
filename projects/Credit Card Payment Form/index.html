@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credit Card Payment Form</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="payment">
+      <div class="bg"></div>
+      <div class="card">
+        <img
+          src="https://image.flaticon.com/icons/png/512/3876/3876951.png"
+          alt="chip"
+          class="chip"
+        />
+        <div class="logo"></div>
+        <h2 class="bankName" contenteditable="true">Bank Name</h2>
+        <form action="post">
+          <div class="inputBox">
+            <span>Card No.</span>
+            <input
+              type="text"
+              placeholder="0123 4567 8901 2345"
+              maxlength="19"
+            />
+          </div>
+          <div class="inputBox">
+            <span>Card Holder</span>
+            <input type="text" placeholder="QIU YINGJUN" />
+          </div>
+          <div class="group">
+            <div class="inputBox">
+              <span>Valid Thru</span>
+              <span>
+                <input
+                  type="number"
+                  placeholder="MM"
+                  maxlength="2"
+                  max="12"
+                  min="01"
+                />
+                <i>/ </i>
+                <input type="number" placeholder="YY" maxlength="2" min="00" />
+              </span>
+            </div>
+            <div class="inputBox">
+              <span>CCV</span>
+              <input type="password" placeholder="***" maxlength="4" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <button class="btn">Confirm and Pay</button>
+    </div>
+  </body>
+</html>
