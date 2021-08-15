@@ -56,26 +56,11 @@ export default {
     return {
       current: "",
       files: [],
-      // fullContent: "",
       options: {
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: true,
         useWorker: true,
-      },
-      tabList: [
-        {
-          name: "tab1",
-          tab: "我",
-        },
-        {
-          name: "tab2",
-          tab: "你",
-        },
-      ],
-      contentList: {
-        tab1: "content1",
-        tab2: "content2",
       },
     };
   },
