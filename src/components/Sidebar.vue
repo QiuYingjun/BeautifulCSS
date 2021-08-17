@@ -14,8 +14,8 @@
           <a-row>
             <a-col :span="8">
               <img
+                class="preview"
                 alt="example"
-                style="width:100%;height:100%"
                 :src="item.image_url"
               />
             </a-col>
@@ -40,18 +40,10 @@ export default {
     };
   },
   props: {
-    currentProjectName: {
-      type: String,
-      default: "",
-    },
   },
   methods: {
-    changeProject: function(pjName) {
-      console.log(pjName);
-    },
   },
   mounted: function() {
-    console.log(this.currentProjectName);
     axios
       .get(
         "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects"
@@ -96,20 +88,15 @@ export default {
             });
         });
       })
-      .then(() => {
-        for (var i = 0; i < 6; i++) {
-          this.projects.push({
-            name: "fdafdsaf" + i,
-            description: "adfafdsfdsafdsafdsa",
-            image_url: logo,
-          });
-        }
-      });
   },
 };
 </script>
 <style scoped>
 .active div.ant-card {
   border-color: #369eff;
+}
+.preview {
+  width:90px;
+  height:90px;
 }
 </style>

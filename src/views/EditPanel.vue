@@ -1,7 +1,7 @@
 <template>
   <a-layout :has-sider="true">
     <a-layout-sider :theme="'light'" width="320">
-      <Sidebar :currentProjectName="projectName" />
+      <Sidebar />
     </a-layout-sider>
     <a-layout-content>
       <router-view> </router-view>
