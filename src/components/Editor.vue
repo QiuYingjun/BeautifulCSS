@@ -6,11 +6,7 @@
         :title="projectName"
         :tab-list="files"
         :active-tab-key="current"
-        @tabChange="
-          (key) => {
-            current = key;
-          }
-        "
+        @tabChange="(key) => changeActive(key)"
       >
         <template #tabBarExtraContent>
           <DownloadButton :files="files" :projectName="projectName" />
@@ -18,11 +14,15 @@
         <div v-for="file in files" :key="file.name">
           <v-ace-editor
             v-model:value="file.content"
-            v-if="file.name == current"
+            v-if="file.isActive"
             :lang="file.ext"
             theme="monokai"
             style="height: 600px"
-            :options="options"
+            :options="{
+              enableSnippets: true,
+              enableLiveAutocompletion: true,
+              useWorker: true,
+            }"
           />
         </div>
       </a-card>
@@ -54,17 +54,15 @@ export default {
   },
   data() {
     return {
-      current: "",
       files: [],
-      options: {
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: true,
-        useWorker: true,
-      },
     };
   },
   methods: {
+    changeActive: function(name) {
+      this.files.forEach((f) => {
+        f.isActive = f.name == name;
+      });
+    },
     ext: function(fileName) {
       var e = fileName.split(".").slice(-1)[0];
       switch (e) {
@@ -136,12 +134,13 @@ export default {
                   name: record.name,
                   ext: ext,
                   id: record.sha,
+                  isActive: false,
                   key: record.name,
                   tab: record.name,
                 };
                 if (ext == "html") {
+                  file.isActive = true;
                   this.files.splice(0, 0, file);
-                  this.current = file.name;
                 } else {
                   this.files.push(file);
                 }
@@ -154,17 +153,35 @@ export default {
           console.error(e);
         });
     },
+    loadProject: function(pjName) {
+      const newProject = this.$store.getters.getProjectByName(pjName);
+      if (!newProject || !newProject.files) {
+        this.getFilesFromAPI();
+      } else {
+        this.files = newProject.files;
+      }
+    },
   },
   mounted: function() {
-    this.getFilesFromAPI();
+    this.loadProject(this.projectName);
+  },
+  beforeUnmount: function() {
+    this.$store.commit("upsertProject", {
+      name: this.projectName,
+      files: this.files,
+    });
   },
   computed: {
+    current() {
+      try {
+        return this.files.filter((f) => f.isActive)[0].name;
+      } catch (e) {
+        return "";
+      }
+    },
     fullContent() {
       return this.updateIFrame();
     },
-  },
-  updated: function() {
-    this.updateIFrame();
   },
   watch: {
     projectName: function(newVal, oldVal) {
@@ -174,12 +191,7 @@ export default {
         files: this.files,
       };
       this.$store.commit("upsertProject", oldProject);
-      const newProject = this.$store.getters.getProjectByName(newVal);
-      if (!newProject) {
-        this.getFilesFromAPI();
-      } else {
-        this.files = newProject.files;
-      }
+      this.loadProject(newVal);
     },
   },
 };

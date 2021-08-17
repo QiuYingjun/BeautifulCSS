@@ -6,18 +6,17 @@
     :pagination="{ pageSize: 5, position: 'top' }"
   >
     <template #renderItem="{ item }">
-      <router-link
-        :to="'/EditPanel/' + item.name"
-        active-class="active"
-      >
+      <router-link :to="'/EditPanel/' + item.name" active-class="active">
         <a-card hoverable width="280" size="small">
           <a-row>
             <a-col :span="8">
               <img
+                v-if="item.image_url"
                 class="preview"
                 alt="example"
                 :src="item.image_url"
               />
+              <img v-else class="preview" alt="example" :src="logo" />
             </a-col>
             <a-col :span="16" style="padding-left:10px">
               <a-card-meta :title="item.name" :description="item.description" />
@@ -36,58 +35,57 @@ export default {
   name: "Sidebar",
   data() {
     return {
-      projects: [],
+      logo: logo,
     };
   },
-  props: {
+  props: {},
+  mounted() {
+    if (this.projects.length == 0) {
+      this.getProjectListFromAPI();
+    }
+  },
+  computed: {
+    projects() {
+      return this.$store.getters.getProjectSummary();
+    },
   },
   methods: {
-  },
-  mounted: function() {
-    axios
-      .get(
-        "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects"
-      )
-      .then((response) => {
-        console.log("获取工程一览");
-        response.data.forEach((record) => {
-          this.projects.push({
-            name: record.name,
-            id: record.sha,
+    getProjectListFromAPI: function() {
+      axios
+        .get(
+          "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects"
+        )
+        .then((p_response) => {
+          console.log("获取工程一览");
+          p_response.data.forEach((p_record) => {
+            axios
+              .get(
+                "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
+                  p_record.name +
+                  "/readme.md"
+              )
+              .then((f_response) => {
+                var project = {};
+                project.name = p_record.name;
+                project.description = "";
+                // 去掉标题后，取第一行为说明文本
+                for (const s of Base64.decode(f_response.data.content)
+                  .replace(/^#.*/, "")
+                  .split("\n")) {
+                  if (s != "" && project.description == "") {
+                    project.description = s;
+                    break;
+                  }
+                }
+                project.image_url =
+                  "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
+                  project.name +
+                  "/readme.png";
+                this.$store.commit("upsertProject", project);
+              });
           });
         });
-        return this.projects;
-      })
-      .then((projects) => {
-        projects.forEach((project) => {
-          axios
-            .get(
-              "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
-                project.name +
-                "/readme.md"
-            )
-            .then((response) => {
-              project.description = "";
-              // 去掉标题后，取第一行为说明文本
-              for (const s of Base64.decode(response.data.content)
-                .replace(/^#.*/, "")
-                .split("\n")) {
-                if (s != "" && project.description == "") {
-                  project.description = s;
-                  break;
-                }
-              }
-              project.image_url =
-                "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
-                project.name +
-                "/readme.png";
-            })
-            .catch(() => {
-              project.description = "没有说明";
-              project.image_url = logo;
-            });
-        });
-      })
+    },
   },
 };
 </script>
@@ -96,7 +94,7 @@ export default {
   border-color: #369eff;
 }
 .preview {
-  width:90px;
-  height:90px;
+  width: 90px;
+  height: 90px;
 }
 </style>
