@@ -2,13 +2,13 @@
   <a-menu v-model:selectedKeys="Home" mode="horizontal">
     <a-menu-item key="Home">
       <HomeOutlined />
-      <router-link to="/BeautifulCSS">
+      <router-link to="/">
         Home
       </router-link>
     </a-menu-item>
     <a-menu-item key="EditPanel">
       <ExperimentOutlined />
-      <router-link to="/BeautifulCSS/EditPanel">
+      <router-link to="/EditPanel">
         Panel
       </router-link>
     </a-menu-item>

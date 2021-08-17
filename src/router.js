@@ -1,19 +1,19 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory} from "vue-router";
 
 import Home from "@/views/Home.vue";
 import EditPanel from "@/views/EditPanel.vue";
 import Editor from "@/components/Editor.vue";
 
 export default createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     {
-      path: "/BeautifulCSS",
+      path: "/",
       name: "home",
       component: Home,
     },
     {
-      path: "/BeautifulCSS/EditPanel/:projectName",
+      path: "/EditPanel/:projectName",
       name: "EditPanel",
       component: EditPanel,
       props: true,
@@ -26,8 +26,8 @@ export default createRouter({
       ],
     },
     {
-      path: "/BeautifulCSS/EditPanel",
-      redirect: "/BeautifulCSS/EditPanel/Glass Card",
+      path: "/EditPanel",
+      redirect: "/EditPanel/Glass Card",
     },
   ],
 });

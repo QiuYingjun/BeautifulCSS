@@ -7,7 +7,7 @@
   >
     <template #renderItem="{ item }">
       <router-link
-        :to="'/BeautifulCSS/EditPanel/' + item.name"
+        :to="'/EditPanel/' + item.name"
         active-class="active"
       >
         <a-card hoverable width="280" size="small">
