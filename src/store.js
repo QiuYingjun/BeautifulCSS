@@ -41,6 +41,9 @@ const store = createStore({
       }
     },
     upsertFile(state, { projectName, file }) {
+      if (!state.projects.filter((p) => p.name == projectName)) {
+        state.projects.push({ name: projectName });
+      }
       state.projects.forEach((p) => {
         if (p.name == projectName) {
           if (p.files) {

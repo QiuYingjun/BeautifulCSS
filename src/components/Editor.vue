@@ -124,7 +124,6 @@ export default {
       if (p && p.files) {
         return p.files;
       } else {
-        this.$store.dispatch("getFilesFromAPI", this.projectName);
         return [];
       }
     },
