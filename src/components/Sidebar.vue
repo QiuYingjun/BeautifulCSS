@@ -18,7 +18,7 @@
               />
               <img v-else class="preview" alt="example" :src="logo" />
             </a-col>
-            <a-col :span="16" style="padding-left:10px">
+            <a-col :span="16" style="padding-left: 10px">
               <a-card-meta :title="item.name" :description="item.description" />
             </a-col>
           </a-row>
@@ -28,8 +28,6 @@
   </a-list>
 </template>
 <script>
-import axios from "axios";
-import { Base64 } from "js-base64";
 import logo from "../assets/logo.png";
 export default {
   name: "Sidebar",
@@ -40,8 +38,8 @@ export default {
   },
   props: {},
   mounted() {
-    if (this.projects.length == 0) {
-      this.getProjectListFromAPI();
+    if (this.$store.state.projects.length == 0) {
+      this.$store.dispatch("getProjectListFromAPI");
     }
   },
   computed: {
@@ -49,44 +47,7 @@ export default {
       return this.$store.getters.getProjectSummary();
     },
   },
-  methods: {
-    getProjectListFromAPI: function() {
-      axios
-        .get(
-          "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects"
-        )
-        .then((p_response) => {
-          console.log("获取工程一览");
-          p_response.data.forEach((p_record) => {
-            axios
-              .get(
-                "https://api.github.com/repos/QiuYingjun/BeautifulCSS/contents/projects/" +
-                  p_record.name +
-                  "/readme.md"
-              )
-              .then((f_response) => {
-                var project = {};
-                project.name = p_record.name;
-                project.description = "";
-                // 去掉标题后，取第一行为说明文本
-                for (const s of Base64.decode(f_response.data.content)
-                  .replace(/^#.*/, "")
-                  .split("\n")) {
-                  if (s != "" && project.description == "") {
-                    project.description = s;
-                    break;
-                  }
-                }
-                project.image_url =
-                  "https://raw.githubusercontent.com/QiuYingjun/BeautifulCSS/main/projects/" +
-                  project.name +
-                  "/readme.png";
-                this.$store.commit("upsertProject", project);
-              });
-          });
-        });
-    },
-  },
+  methods: {},
 };
 </script>
 <style scoped>
