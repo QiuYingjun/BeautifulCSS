@@ -21,47 +21,37 @@ const store = createStore({
   },
   mutations: {
     upsertProject(state, project) {
-      var success = false;
-      state.projects.forEach((p) => {
-        if (p.name == project.name) {
-          if (project.files) {
-            p.files = project.files;
-          }
-          if (project.image_url) {
-            p.image_url = project.image_url;
-          }
-          if (project.description) {
-            p.description = project.description;
-          }
-          success = true;
-        }
-      });
-      if (!success) {
+      var proj = state.projects.filter((p) => p.name == project.name)[0];
+      if (!proj) {
         state.projects.push(project);
+      } else {
+        if (project.files) {
+          proj.files = project.files;
+        }
+        if (project.image_url) {
+          proj.image_url = project.image_url;
+        }
+        if (project.description) {
+          proj.description = project.description;
+        }
       }
     },
     upsertFile(state, { projectName, file }) {
-      if (!state.projects.filter((p) => p.name == projectName)) {
-        state.projects.push({ name: projectName });
+      var proj = state.projects.filter((p) => p.name == projectName)[0];
+      if (!proj) {
+        proj = { name: projectName };
+        state.projects.push(proj);
       }
-      state.projects.forEach((p) => {
-        if (p.name == projectName) {
-          if (p.files) {
-            var success = false;
-            p.files.forEach((f) => {
-              if (f.name == file.name) {
-                success = true;
-                f = file;
-              }
-            });
-            if (!success) {
-              p.files.push(file);
-            }
-          } else {
-            p.files = [file];
-          }
+      if (proj.files) {
+        var fi = proj.files.filter((f) => f.name == file.name)[0];
+        if (fi) {
+          fi.content = file.content;
+        } else {
+          proj.files.push(file);
         }
-      });
+      } else {
+        proj.files = [file];
+      }
     },
   },
   getters: {
