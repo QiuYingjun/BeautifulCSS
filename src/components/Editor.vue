@@ -1,38 +1,57 @@
 <template>
-  <a-row>
-    <a-col :span="12">
-      <a-card
-        style="width: 100%"
-        :title="projectName"
-        :tab-list="files"
-        :active-tab-key="current"
-        @tabChange="(key) => changeActive(key)"
-      >
-        <template #tabBarExtraContent>
-          <DownloadButton :files="files" :projectName="projectName" />
-        </template>
-        <div v-for="file in files" :key="file.name">
-          <v-ace-editor
-            v-model:value="file.content"
-            v-if="file.isActive"
-            :lang="file.ext"
-            theme="monokai"
-            style="height: 600px"
-            :options="{
-              enableSnippets: true,
-              enableLiveAutocompletion: true,
-              useWorker: true,
-            }"
-          />
-        </div>
-      </a-card>
-    </a-col>
-    <!-- 预览 -->
-    <a-col :span="12">
-      <iframe style="width: 100%; height: 100%" :srcdoc="fullContent" />
-    </a-col>
-  </a-row>
+  <div>
+    <a-row v-if="files.length > 0">
+      <a-col :span="12">
+        <a-card
+          style="width: 100%"
+          :title="projectName"
+          :tab-list="files"
+          :active-tab-key="current"
+          @tabChange="(key) => changeActive(key)"
+        >
+          <template #tabBarExtraContent>
+            <DownloadButton :files="files" :projectName="projectName" />
+          </template>
+          <div v-for="file in files" :key="file.name">
+            <v-ace-editor
+              v-model:value="file.content"
+              v-if="file.isActive"
+              :lang="file.ext"
+              theme="monokai"
+              style="height: 600px"
+              :options="{
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+                useWorker: true,
+              }"
+            />
+          </div>
+        </a-card>
+      </a-col>
+      <!-- 预览 -->
+      <a-col :span="12">
+        <iframe style="width: 100%; height: 100%" :srcdoc="fullContent" />
+      </a-col>
+    </a-row>
+    <a-row v-else>
+      <div class="example">
+        <a-spin tip="Loading" />
+      </div>
+    </a-row>
+  </div>
 </template>
+<style scoped>
+.example {
+  text-align: center;
+  width: 100%;
+  height: 800px;
+  background: rgba(0, 0, 0, 0.05);
+}
+.ant-spin {
+  position: absolute;
+  top: 50%;
+}
+</style>
 <script>
 import DownloadButton from "./DownloadButton.vue";
 import { VAceEditor } from "vue3-ace-editor";

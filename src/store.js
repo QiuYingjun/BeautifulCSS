@@ -21,7 +21,7 @@ const store = createStore({
   },
   mutations: {
     upsertProject(state, project) {
-      var proj = state.projects.filter((p) => p.name == project.name)[0];
+      var proj = state.projects.find((p) => p.name == project.name);
       if (!proj) {
         state.projects.push(project);
       } else {
@@ -37,13 +37,13 @@ const store = createStore({
       }
     },
     upsertFile(state, { projectName, file }) {
-      var proj = state.projects.filter((p) => p.name == projectName)[0];
+      var proj = state.projects.find((p) => p.name == projectName);
       if (!proj) {
         proj = { name: projectName };
         state.projects.push(proj);
       }
       if (proj.files) {
-        var fi = proj.files.filter((f) => f.name == file.name)[0];
+        var fi = proj.files.find((f) => f.name == file.name);
         if (fi) {
           fi.content = file.content;
         } else {
